@@ -1,0 +1,87 @@
+<html>
+
+<p><button onclick="localizar()">Mostrar localización</button></p>
+
+<div id="estado"></div>
+<br>
+<div id="mapa" style="width: 100%; height: 90%;"></div>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBIwzALxUPNbatRBj3Xi1Uhp0fFzwWNBkE&libraries=&v=weekly"
+  defer
+></script>
+
+<script>
+
+// función principal, lanzada al inicio
+function localizar() { 
+
+    // objeto HTML id=estado
+    var estado = document.getElementById("estado");
+
+    // verificación API
+    if (!navigator.geolocation){
+        estado.innerHTML = "Tu navegador no soporta geolocalización";
+        return;
+    }
+
+    // función que enviaremos como argumento a navigator.geolocation.getCurrentPosition en caso de que éste consiga resolver nuestras coordenadas
+    // recibirá como argumento (position) un objeto del cual podremos obtener dichas coordenadas
+    function exito(position) {
+
+        var latitud  = position.coords.latitude;
+        var longitud = position.coords.longitude;
+
+        // creamos un nuevo objeto de coordenada, requerido por la API de googlemaps
+        var posicion = {
+          lat: latitud,
+          lng: longitud,
+        };
+
+        // invocamos la API de googlemaps en esta función
+        dibujarMapa(posicion);
+
+        estado.innerHTML = "Tu latitud es: "+ latitud +"<br>Tu longitud es: "+ longitud;
+    };
+
+    // función que enviaremos como argumento a navigator.geolocation.getCurrentPosition en caso de que éste no consiga resolver nuestras coordenadas
+    function error() {
+        estado.innerHTML = "No se pudo hallar tu localización";
+    };
+
+    estado.innerHTML = "Localizando...";
+
+    // configuración de la localización, habilitaremos la alta precisión
+    positionOptions = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0 // no permitiremos caché de coordenadas
+    };
+
+    // solicitamos las coordenadas a la API, y le enviamos las funciones callback "exito" y "error" como argumentos 
+    navigator.geolocation.getCurrentPosition(exito, error, positionOptions);
+}
+
+// Cargará el mapa de googlemaps y colocará el marcador en la coordenada pasada
+function dibujarMapa(posicion) {
+
+    // objeto mapa
+    var mapa = new google.maps.Map(document.getElementById("mapa"), {
+        center: posicion,
+        zoom: 15,
+    });
+
+    // objeto marcador
+    var marcador = new google.maps.Marker({
+        position: posicion,
+        title: "Tu ubicación",
+    });
+
+    // metemos el marcador en el mapa
+    marcador.setMap(mapa);
+}
+</script>
+
+</html>
+
