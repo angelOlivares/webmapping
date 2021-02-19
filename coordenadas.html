@@ -1,0 +1,36 @@
+
+<!-- Aquí escribiremos las coordenadas -->
+<div id="coordenadas"></div>
+
+<script>
+
+  // objeto HTML id=coordenadas
+	var coordenadas = document.getElementById('coordenadas');
+  
+  // función que enviaremos como argumento a navigator.geolocation.getCurrentPosition en caso de que éste consiga resolver nuestras coordenadas
+  // recibirá como argumento (position) un objeto del cual podremos obtener dichas coordenadas
+  function exito(position) {
+
+  	// escribimos en el HTML las coordenadas
+  	coordenadas.innerHTML = 'Latitud: '+ position.coords.latitude + '<br>'+ 'Longitud: '+ position.coords.longitude;
+  }
+  
+  // función principal, lanzada al inicio
+  function localizar() {
+  	
+  	// si la API de Geolocalización está disponible
+  	if(navigator.geolocation) {
+    	
+      // solicitamos las coordenadas a la API, y le enviamos la función callback "exito" como argumento 
+    	navigator.geolocation.getCurrentPosition(exito);
+    
+    // en caso contrario
+    } else {
+      // mostramos un textito de aviso (no pasará)
+    	coordenadas.innerHTML = 'Tu navegador no soporta geolocalización';
+    }
+  }
+
+	localizar();
+</script>
+
